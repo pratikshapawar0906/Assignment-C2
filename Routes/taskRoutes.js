@@ -1,4 +1,5 @@
-const express=require('express')
+const express=require('express');
+const { authenticate } = require('../Middleware/errorhandling');
 const router=express.Router();
 
 let tasks=[];
@@ -43,7 +44,7 @@ router.get('/:id',(req,res ) =>{
 })
 
 //post /tasks
-router.post('/', validateTask,(req,res)=>{
+router.post('/', authenticate,validateTask,(req,res)=>{
     const {title,description}=req.body;
     const newtaks={id:taskId++, title,description}
     tasks.push(newtaks)
@@ -51,7 +52,7 @@ router.post('/', validateTask,(req,res)=>{
 })
 
 //put /task/:id
-router.put('/:id',validateTask,(req,res)=>{
+router.put('/:id',authenticate,validateTask,(req,res)=>{
   const task=tasks.find(t=>t.id===parseInt(req.params.id))
   if(!task) return res.status(404).json({ error:'Task not found'})
     task.title=req.body.title;
@@ -60,7 +61,7 @@ router.put('/:id',validateTask,(req,res)=>{
 })
 
 //delete /tasks/:id
-router.delete('/:id',(req,res)=>{
+router.delete('/:id',authenticate,(req,res)=>{
     const index=tasks.findIndex(t=>t.id===parseInt(req.params.id))
     if(index=== -1) return res.status(404).json({ error:'task not found'})
 
